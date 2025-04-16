@@ -1,5 +1,19 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+    <div class="d-flex justify-content-center align-items-center" >
+    {% if user.is_authenticated %}
+    <div class="card mb-3 shadow-sm w-75 mt-5">
+        <div class="card-body">
+            <h6 class="card-title mb-3">New Post</h6>
+            <form>
+            <div class="mb-3">
+                <textarea class="form-control" rows="3" placeholder="Write Here.."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Post</button>
+            </form>
+        </div>
+    </div>
+    </div>
+    {% endif %}
 {% endblock %}
