@@ -1,14 +1,17 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 
-from .models import User
+from .models import User, Post, Account, Like, Comment
 
 
 def index(request):
-    return render(request, "network/index.html")
+    post = Post.objects.all()
+    return render(request, "network/index.html",{
+        "post" : post,
+    })
 
 
 def login_view(request):
@@ -53,6 +56,7 @@ def register(request):
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
+            Account.objects.create(owner=user)
         except IntegrityError:
             return render(request, "network/register.html", {
                 "message": "Username already taken."
@@ -61,3 +65,37 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+def post(request):
+    print("form recieved")
+    if request.method == "POST":
+        
+        currentuser=request.user
+        account = currentuser.accounts.first()
+        print(account)
+        content = request.POST["content"]
+        print(content)
+
+        if account and content:
+            newpost = Post(
+                account = account,
+                content = content,
+                like = 0,
+
+            ) 
+            newpost.save()
+        
+        return redirect("index") 
+
+def follow(request):
+    pass
+
+
+def unfollow(request):
+    pass
+
+def like(request):
+    pass
+
+def edit(request):
+    pass

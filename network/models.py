@@ -20,11 +20,11 @@ class Post(models.Model):
 class Account(models.Model):
     owner = models.ForeignKey("User", on_delete=models.CASCADE, related_name="accounts")
     #post = models.ForeignKey("Post", related_name="account") -> it has already been related in the Post class
-    following = models.ManyToManyField("Account", symmetrical=False, related_name="follower") #symmetrical=False -> not every following follows you
+    following = models.ManyToManyField("Account", symmetrical=False, blank=True, related_name="follower") #symmetrical=False -> not every following follows you
     
     
     def __str__(self):
-        return self.owner
+        return self.owner.username
 
 class Like(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="likes")
