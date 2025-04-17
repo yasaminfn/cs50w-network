@@ -85,24 +85,40 @@ def post(request):
             ) 
             newpost.save()
         
-        return redirect("index") 
+        return HttpResponseRedirect(reverse("index"))
 
 def profile(request, username):
-    print(username)
     owner = User.objects.get(username=username)
     account = Account.objects.get(owner=owner)
-    print(account.following.all())
+
     return render(request, "network/profile.html",{
         "user": owner,
         "account": account,
         "post" : account.posts.all()
     })
-def follow(request):
-    pass
+
+
+def follow(request, username):
+    user = request.user #current user
+    users_account=user.accounts.first() #current user's account
+    profile = User.objects.get(username=username) #the user we wanna follow
+    owner = Account.objects.get(owner=profile) #the account we wanna follow
+    
+    print(f"user: {user} profile: {profile} owner:{owner} user's account :{users_account}")
+    if users_account != owner:
+        if owner not in users_account.following.all():
+            users_account.following.add(owner)
+            print(f"added {owner} to the followings")
+        else:
+            print("already followed")
+    else:
+        print("You can't follow yourself!")
+    return redirect("index")
 
 
 def unfollow(request):
     pass
+
 
 def like(request):
     pass

@@ -3,7 +3,7 @@
 {% block body %}
     <div class="d-flex justify-content-center align-items-center" >
     {% if user.is_authenticated %}
-    <div class="card mb-3 shadow-sm w-75 mt-5">
+    <div class="card mb-3 shadow-sm w-75 mt-5" style=" border-radius: 12px; ">
         <div class="card-body">
             <h6 class="card-title mb-3">New Post</h6>
             <form method = "POST" action="{% url 'post' %}">
@@ -18,7 +18,7 @@
     </div>
     {% endif %}
     {% for item in post %}
-        <div class="card ">  
+        <div class="card  mb-3 shadow-sm w-75 mt-3 mx-auto">  
             <div class="card-header">  
                 <a href="{% url 'profile' item.account %}">{{ item.account }}</a>  
             </div>  
