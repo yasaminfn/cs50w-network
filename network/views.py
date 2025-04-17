@@ -90,11 +90,24 @@ def post(request):
 def profile(request, username):
     owner = User.objects.get(username=username)
     account = Account.objects.get(owner=owner)
+    currentuseraccount = request.user.accounts.first()
+    print(account, currentuseraccount)
+    if account != currentuseraccount:
+        owns = False
+        if account in currentuseraccount.following.all():
+            follows= True
+        else:
+            follows = False
+    else:
+        owns = True
+        follows = False
 
     return render(request, "network/profile.html",{
         "user": owner,
         "account": account,
-        "post" : account.posts.all()
+        "post" : account.posts.all(),
+        "follows" : follows,
+        "owns" : owns,
     })
 
 
@@ -113,11 +126,40 @@ def follow(request, username):
             print("already followed")
     else:
         print("You can't follow yourself!")
-    return redirect("index")
+    
+    return render(request, "network/profile.html",{
+        "user": profile,
+        "account": owner,
+        "post" : owner.posts.all(),
+        "follows" : True,
+        "owns" : False,
+    })
 
 
-def unfollow(request):
-    pass
+
+def unfollow(request, username):
+    user = request.user #current user
+    users_account=user.accounts.first() #current user's account
+    profile = User.objects.get(username=username) #the user we wanna unfollow
+    owner = Account.objects.get(owner=profile) #the account we wanna unfollow
+    
+    print(f"user: {user} profile: {profile} owner:{owner} user's account :{users_account}")
+    if users_account != owner:
+        if owner in users_account.following.all():
+            users_account.following.remove(owner)
+            print(f"removed {owner} from the followings")
+        else:
+            print("not following!")
+    else:
+        print("You can't unfollow yourself!")
+
+    return render(request, "network/profile.html",{
+        "user": profile,
+        "account": owner,
+        "post" : owner.posts.all(),
+        "follows" : False,
+        "owns" : False,
+    })
 
 
 def like(request):
