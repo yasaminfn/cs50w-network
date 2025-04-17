@@ -1,0 +1,79 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+<br>
+<div class="container">
+    <div class="card shadow-sm" style="max-width: 540px; margin: 0 auto;">
+        <div class="row g-0">
+            
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title d-flex justify-content-between align-items-center">
+                        {{account}}
+                    </h5>
+
+                    <p class="card-text">
+                        <small class="text-muted">
+                                <i class="fas fa-map-marker-alt"></i> Joined on {{user.date_joined}}
+                            </small>
+                    </p>
+                    <div class="border-top pt-2">
+                        <div class="row text-center">
+                            <div class="col">
+                                <h6>Posts</h6>
+                                <strong>{{account.posts.count}}</strong>
+                            </div>
+                            <div class="col border-start">
+                                <h6>Following</h6>
+                                <strong>{{account.following.count}}</strong>
+                            </div>
+                            <div class="col border-start">
+                                <h6>Followers</h6>
+                                <strong>{{account.follower.count}}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 p-3 text-center">
+            <img src="https://iili.io/312ElzQ.png" class="rounded-circle img-thumbnail " alt="Profile Picture" style="width: 130px; height: 130px; object-fit: cover;">
+            </div>
+        </div>
+        <div class="card-footer bg-white">
+            <div class="d-flex justify-content-around">
+                <button class="btn btn-outline-primary rounded-pill px-4">
+    <i class="fas fa-user-plus me-1"></i> Follow
+</button>
+                
+            </div>
+        </div>
+        <hr>
+        {% for item in post %}
+            <div class="card  my-3 shadow-sm border-0" style=" border-radius: 12px; ">  
+                <div class="card-header bg-light fw-bold">  
+                    {{ item.account }}  
+                </div>  
+                <div class="card-body">  
+                    <blockquote class="blockquote mb-0">  
+                        <p>{{ item.content }}</p>  
+                    </blockquote>  
+                    <footer class="blockquote-footer">  
+                        Posted at <cite title="Source Title">{{ item.created_at }}</cite>  
+                    </footer>  
+                    <hr>  
+                    <div class="d-flex justify-content-between align-items-center">  
+                        <button class="btn btn-outline-primary like-button">  
+                            <i class="fa fa-thumbs-up"></i> Like  
+                        </button>  
+                        <div class="likes">  
+                            <i class="fa fa-thumbs-up"></i>  
+                            <span id="like-count">{{ item.like_count }} likes</span>  
+                        </div>  
+                    </div>  
+                </div>  
+            </div>
+        {% endfor %} 
+    </div>
+</div>
+{% endblock %}

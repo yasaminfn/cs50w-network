@@ -87,6 +87,16 @@ def post(request):
         
         return redirect("index") 
 
+def profile(request, username):
+    print(username)
+    owner = User.objects.get(username=username)
+    account = Account.objects.get(owner=owner)
+    print(account.following.all())
+    return render(request, "network/profile.html",{
+        "user": owner,
+        "account": account,
+        "post" : account.posts.all()
+    })
 def follow(request):
     pass
 
