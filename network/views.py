@@ -4,14 +4,21 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 from .models import User, Post, Account, Like, Comment
 
 
 def index(request):
     post = Post.objects.all()
+    paginator = Paginator(post, 5)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(request, "network/index.html",{
         "post" : post,
+        'page_obj': page_obj,
     })
 
 
@@ -88,6 +95,7 @@ def post(request):
         
         return HttpResponseRedirect(reverse("index"))
 
+@login_required(login_url="login")
 def profile(request, username):
     owner = User.objects.get(username=username) #user
     account = Account.objects.get(owner=owner) #account
@@ -168,6 +176,11 @@ def following(request):
     account=user.accounts.first() #currents user's account
     followings=account.following.all() #current user's followings
     posts=Post.objects.filter(account__in=followings)  #posts of user's followings
+
+    paginator = Paginator(posts, 5)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     
     if not posts.exists():
         return render(request, "network/index.html",{
@@ -177,6 +190,7 @@ def following(request):
 
     return render(request, "network/index.html",{
         "post" : posts,
+        'page_obj': page_obj,
     }) 
 
 
