@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .models import User, Post, Account, Like, Comment
 
@@ -88,8 +89,8 @@ def post(request):
         return HttpResponseRedirect(reverse("index"))
 
 def profile(request, username):
-    owner = User.objects.get(username=username)
-    account = Account.objects.get(owner=owner)
+    owner = User.objects.get(username=username) #user
+    account = Account.objects.get(owner=owner) #account
     currentuseraccount = request.user.accounts.first()
     print(account, currentuseraccount)
     if account != currentuseraccount:
@@ -160,6 +161,23 @@ def unfollow(request, username):
         "follows" : False,
         "owns" : False,
     })
+
+@login_required(login_url="login")
+def following(request):
+    user=request.user #currentuser
+    account=user.accounts.first() #currents user's account
+    followings=account.following.all() #current user's followings
+    posts=Post.objects.filter(account__in=followings)  #posts of user's followings
+    
+    if not posts.exists():
+        return render(request, "network/index.html",{
+        "post" : posts,
+        "message" : "You’re not following anyone yet! Start exploring and follow users to see their posts"
+    })
+
+    return render(request, "network/index.html",{
+        "post" : posts,
+    }) 
 
 
 def like(request):

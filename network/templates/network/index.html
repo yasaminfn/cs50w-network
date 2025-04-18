@@ -1,6 +1,16 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
+    {% if message %}
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="fa fa-info-circle me-2"></i>
+            <div>
+                {{ message }}
+                <a href="{% url 'index' %}" class="alert-link ms-2">Go back to main page</a>
+            </div>
+        </div>
+
+    {% endif %}
     <div class="d-flex justify-content-center align-items-center" >
     {% if user.is_authenticated %}
     <div class="card mb-3 shadow-sm w-75 mt-5" style=" border-radius: 12px; ">
