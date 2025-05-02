@@ -1,11 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-
+import json
 from .models import User, Post, Account, Like, Comment
 
 
@@ -81,7 +81,7 @@ def post(request):
         currentuser=request.user
         account = currentuser.accounts.first()
         print(account)
-        content = request.POST["content"]
+        content = json.loads(request.body).get("content")
         print(content)
 
         if account and content:
@@ -93,7 +93,12 @@ def post(request):
             ) 
             newpost.save()
         
-        return HttpResponseRedirect(reverse("index"))
+            return JsonResponse({"message": "Post created successfully."}, status=201)
+
+        # در صورت نبودن محتوا یا اکانت
+        return JsonResponse({"error": "Invalid data."}, status=400)
+
+    return JsonResponse({"error": "POST method required."}, status=405)
 
 @login_required(login_url="login")
 def profile(request, username):
@@ -197,5 +202,14 @@ def following(request):
 def like(request):
     pass
 
-def edit(request):
-    pass
+def edit(request,post_id):
+    post = Post.objects.all()
+    paginator = Paginator(post, 5)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "network/index.html",{
+        "post" : post,
+        'page_obj': page_obj,
+    })

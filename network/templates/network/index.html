@@ -1,4 +1,9 @@
 {% extends "network/layout.html" %}
+{% load static %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+{% endblock %}
 
 {% block body %}
     {% if message %}
@@ -12,29 +17,52 @@
 
     {% endif %}
 
-
-    <div class="d-flex justify-content-center align-items-center" >
+    <div class="d-flex justify-content-center align-items-center">
     {% if user.is_authenticated %}
-    <div class="card mb-3 shadow-sm w-75 mt-5" style=" border-radius: 12px; ">
-        <div class="card-body">
-            <h6 class="card-title mb-3">New Post</h6>
-            <form method = "POST" action="{% url 'post' %}">
-            {% csrf_token %}
-            <div class="mb-3">
-                <textarea class="form-control" rows="3" placeholder="Write Here.." name="content"></textarea>
+        <div class="card mb-3 shadow-sm w-75 mt-5" id="editpost-view" style=" border-radius: 12px; display: none;">
+            <div class="card-body">
+                <h6 class="card-title mb-3">Edit Post</h6>
+                <form method = "POST" action="{% url 'post' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <textarea class="form-control" rows="3" placeholder="Write Here.." name="content"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Post</button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary btn-sm">Post</button>
-            </form>
         </div>
-    </div>
-    </div>
     {% endif %}
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center">
+    {% if user.is_authenticated %}
+        <div class="card mb-3 shadow-sm w-75 mt-5" id="newpost-view" style=" border-radius: 12px; display: none;">
+            <div class="card-body">
+                <h6 class="card-title mb-3">New Post</h6>
+                <form method = "POST" action="{% url 'post' %}" id="newpost-form">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <textarea class="form-control" rows="3" placeholder="Write Here.." id="newpost-content" name="content"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm" id="submit-newpost">Post</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+    </div>
+    
 
 
-    {% for item in page_obj %}
-        <div class="card  mb-3 shadow-sm w-75 mt-3 mx-auto">  
-            <div class="card-header">  
+    
+    <div class="card  mb-3 shadow-sm w-75 mt-3 mx-auto" id="post-view"> 
+        {% for item in page_obj %} 
+            <div class="card-header d-flex justify-content-between align-items-center">  
                 <a href="{% url 'profile' item.account %}">{{ item.account }}</a>  
+                {% if item.account == request.user.accounts.first %}
+                <a href="{% url 'edit' item.id %}" class="text-muted" title="Edit" id="edit">
+                    <i class="fa fa-pencil-alt small"></i>
+                </a>
+                {% endif %}
             </div>  
             <div class="card-body">  
                 <blockquote class="blockquote mb-0">  
@@ -53,11 +81,15 @@
                         <span id="like-count">{{ item.like_count }} likes</span>  
                     </div>  
                 </div>  
-            </div>  
-        </div>
-    {% endfor %} 
-    <br>
-    
+            </div> 
+        {% endfor %}  
+    </div>
+    {% if user.is_authenticated %}
+        <button class="btn btn-light rounded-circle fab" id="new-post-btn" title="New Post">
+            <i class="fas fa-plus text-primary"></i>
+        </button>
+    {% endif %}
+
     <nav aria-label="...">
         <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
