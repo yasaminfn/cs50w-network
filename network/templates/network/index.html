@@ -22,10 +22,10 @@
         <div class="card mb-3 shadow-sm w-75 mt-5" id="editpost-view" style=" border-radius: 12px; display: none;">
             <div class="card-body">
                 <h6 class="card-title mb-3">Edit Post</h6>
-                <form method = "POST" action="{% url 'post' %}">
+                <form method = "POST" action="{% url 'post' %}" id="editpost-form">
                 {% csrf_token %}
                 <div class="mb-3">
-                    <textarea class="form-control" rows="3" placeholder="Write Here.." name="content"></textarea>
+                    <textarea class="form-control" rows="3" placeholder="edit Here.." id="editpost-content" name="content"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary btn-sm">Post</button>
                 </form>
@@ -59,7 +59,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">  
                 <a href="{% url 'profile' item.account %}">{{ item.account }}</a>  
                 {% if item.account == request.user.accounts.first %}
-                <a href="{% url 'edit' item.id %}" class="text-muted" title="Edit" id="edit">
+                <a href="{% url 'edit' item.id %}" class="text-muted" title="Edit" id="edit" data-post-id="{{ item.id }}">
                     <i class="fa fa-pencil-alt small"></i>
                 </a>
                 {% endif %}

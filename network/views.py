@@ -95,7 +95,7 @@ def post(request):
         
             return JsonResponse({"message": "Post created successfully."}, status=201)
 
-        # در صورت نبودن محتوا یا اکانت
+        #no account or content
         return JsonResponse({"error": "Invalid data."}, status=400)
 
     return JsonResponse({"error": "POST method required."}, status=405)
@@ -203,13 +203,28 @@ def like(request):
     pass
 
 def edit(request,post_id):
-    post = Post.objects.all()
-    paginator = Paginator(post, 5)
+    post = Post.objects.get(id=post_id)
+    print(post)
 
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    if request.method == "PUT":
+        content = json.loads(request.body).get("content")
 
-    return render(request, "network/index.html",{
-        "post" : post,
-        'page_obj': page_obj,
-    })
+        if content:
+            post.content = content
+            print(content)
+            post.save()
+            return JsonResponse({"message": "Post edited successfully."}, status=201)
+
+        return JsonResponse({"error": "Invalid data."}, status=400)
+
+    return JsonResponse({"error": "PUT method required."}, status=405)
+
+def get_post(request, post_id):
+    try:
+        post = Post.objects.get(id=post_id)
+        return JsonResponse({'content': post.content})
+    except Post.DoesNotExist:
+        return JsonResponse({'error': 'Not found'}, status=404)
+    
+
+    
